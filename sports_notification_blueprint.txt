@@ -1,0 +1,97 @@
+================================================================================
+PROJECT BLUEPRINT: HOUSTON SPORTS GAME-DAY NOTIFICATION ENGINE
+================================================================================
+
+Target Teams: 
+- Houston Rockets (NBA)
+- Houston Astros (MLB)
+- Houston Texans (NFL)
+- Houston Dynamo (MLS)
+- Houston Dash (NWSL)
+- Tottenham Hotspur (Premier League)
+
+--------------------------------------------------------------------------------
+1. SYSTEM ARCHITECTURE OVERVIEW
+--------------------------------------------------------------------------------
+[ Free Sports API ] ──► [ ETL Sync Worker (Weekly Cron) ]
+                              │
+                              ▼
+                       [ PostgreSQL / SQLite ]
+                       - games (id, team, opponent, game_time, flags)
+                              │
+                              ▼
+                    [ Alert Daemon (Daily Cron at 08:00 AM) ]
+                              │
+                              ▼
+                    [ Notification Dispatcher ] ──► [ Discord / Telegram Webhook ]
+
+--------------------------------------------------------------------------------
+2. DATA EXTRACTION LAYER & IDEMPOTENCY
+--------------------------------------------------------------------------------
+- Data Provider: Use the free tier of TheSportsDB API (Developer Key: "1").
+- Sync Frequency: Run once a week (e.g., Monday at 00:00 UTC) to pull the 
+  upcoming 14 days of matches.
+- Idempotency Rule: When inserting data, use a database UPSERT strategy (ON 
+  CONFLICT DO UPDATE). If a game fixture changes time, update the existing 
+  row rather than creating a duplicate entry.
+
+--------------------------------------------------------------------------------
+3. DATABASE SCHEMA DESIGN (SQL)
+--------------------------------------------------------------------------------
+CREATE TABLE games (
+    id VARCHAR(50) PRIMARY KEY,                  -- Unique fixture ID from API
+    team_name VARCHAR(50) NOT NULL,               -- e.g., 'Houston Rockets'
+    opponent_name VARCHAR(50) NOT NULL,           -- e.g., 'Golden State Warriors'
+    game_time TIMESTAMP WITH TIME ZONE NOT NULL,  -- Standardized UTC timestamp
+    league VARCHAR(20) NOT NULL,                  -- 'NBA', 'MLB', 'NFL', 'EPL', 'MLS', 'NWSL'
+    week_alert_sent BOOLEAN DEFAULT FALSE,       -- State tracking for weekly alert
+    day_alert_sent BOOLEAN DEFAULT FALSE         -- State tracking for day-of alert
+);
+
+--------------------------------------------------------------------------------
+4. THE TRANSFORM & TIMEZONE LOGIC
+--------------------------------------------------------------------------------
+- Timezone Trap: APIs generally return times in UTC or the local time of the match
+  (e.g., London BST for Tottenham). Your backend must catch these inputs and 
+  force-normalize them into UTC before hitting the database.
+- Presentation Logic: When the alert daemon triggers, read the UTC timestamp from
+  the database and use your programming language's timezone library to format it 
+  into your local Central Time (CT) for the notification text.
+
+--------------------------------------------------------------------------------
+5. ALERT DAEMON LOGIC (DAILY CHECKS)
+--------------------------------------------------------------------------------
+Set up a separate routine that executes every morning at 08:00 AM local time.
+
+A. Week-Of Query:
+   SELECT * FROM games 
+   WHERE game_time BETWEEN NOW() AND NOW() + INTERVAL '7 days' 
+   AND week_alert_sent = FALSE;
+   -> Action: Send notification, then: UPDATE games SET week_alert_sent = TRUE WHERE id = ...;
+
+B. Day-Of Query:
+   SELECT * FROM games 
+   WHERE game_time::DATE = NOW()::DATE 
+   AND day_alert_sent = FALSE;
+   -> Action: Send notification, then: UPDATE games SET day_alert_sent = TRUE WHERE id = ...;
+
+--------------------------------------------------------------------------------
+6. FREE OUTBOUND DELIVERY CHANNELS
+--------------------------------------------------------------------------------
+Skip complex SMS APIs. Instead, use zero-cost Webhooks:
+- Discord: Create a private server. Go to Channel Settings -> Integrations -> 
+  Webhooks. Use your backend to send an HTTP POST request with a JSON payload 
+  containing the match details formatted in Markdown.
+- Telegram: Create a private channel, create a bot via BotFather, add it to your 
+  channel as an administrator, and hit the Telegram Bot API (`sendMessage` endpoint).
+
+--------------------------------------------------------------------------------
+7. IMPLEMENTATION MILESTONES
+--------------------------------------------------------------------------------
+- Milestone 1: Sandbox Script. Fetch raw JSON for the Houston Rockets using the 
+  free key. Successfully print it out in your local terminal window.
+- Milestone 2: Relational State. Initialize SQLite or PostgreSQL. Wire up the 
+  ingestion script to cleanly save and update data rows using native database clients.
+- Milestone 3: Webhook Alert Routing. Write your daemon queries, format a clean 
+  message string, and pipe it successfully to your destination delivery webhook.
+================================================================================
