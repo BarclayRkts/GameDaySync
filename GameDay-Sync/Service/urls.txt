@@ -1,0 +1,17 @@
+﻿## GET https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Houston Astros
+## GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=135256
+
+## GET https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Houston Rockets
+## GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=134876
+
+##GET https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Houston Texans
+## GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=134926
+
+## GET https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Houston Dynamo
+## GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=134144
+
+## GET https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Houston Dash
+## GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=136436
+
+##GET  https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=Tottenham Hotspur
+##GET https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=133616
