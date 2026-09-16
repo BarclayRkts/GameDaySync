@@ -13,7 +13,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var pipeline = scope.ServiceProvider.GetRequiredService<Pipeline>();
-    await pipeline.RunPipeline();
+    string alertChoice = args.Length > 0 ? args[0] : "--weekly";
+    
+    await pipeline.RunPipeline(alertChoice);
 };
 
 app.UseHttpsRedirection();
