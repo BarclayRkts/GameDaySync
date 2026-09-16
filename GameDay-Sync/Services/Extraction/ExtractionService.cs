@@ -21,9 +21,6 @@ public class ExtractionService(HttpClient httpClient)
             }
         }
         
-        string jsonLog = JsonSerializer.Serialize(allTeamEvents, new JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine(jsonLog);
-        
         return allTeamEvents;
     }
     
