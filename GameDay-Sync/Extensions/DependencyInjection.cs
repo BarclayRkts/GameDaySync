@@ -1,6 +1,6 @@
-﻿using GameDay_Sync.Service;
-using GameDay_Sync.Service.Extraction;
-using GameDay_Sync.Service.Load;
+﻿using GameDay_Sync.Services;
+using GameDay_Sync.Services.Extraction;
+using GameDay_Sync.Services.Load;
 
 namespace GameDay_Sync.Extensions;
 

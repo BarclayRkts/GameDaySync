@@ -1,6 +1,6 @@
 using GameDay_Sync.Data;
 using GameDay_Sync.Extensions;
-using GameDay_Sync.Service;
+using GameDay_Sync.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

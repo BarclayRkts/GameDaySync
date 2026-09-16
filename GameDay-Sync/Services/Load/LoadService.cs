@@ -2,7 +2,7 @@
 using GameDay_Sync.Data;
 using GameDay_Sync.Model;
 
-namespace GameDay_Sync.Service.Load;
+namespace GameDay_Sync.Services.Load;
 
 public class LoadService(AppDbContext appDbContext)
 {

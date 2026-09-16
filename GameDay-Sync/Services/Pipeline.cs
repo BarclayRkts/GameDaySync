@@ -1,8 +1,8 @@
 ﻿using GameDay_Sync.Model;
-using GameDay_Sync.Service.Extraction;
-using GameDay_Sync.Service.Load;
+using GameDay_Sync.Services.Extraction;
+using GameDay_Sync.Services.Load;
 
-namespace GameDay_Sync.Service;
+namespace GameDay_Sync.Services;
 
 public class Pipeline(ExtractionService extractionService, LoadService loadService)
 {

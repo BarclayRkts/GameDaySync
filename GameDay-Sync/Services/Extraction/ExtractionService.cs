@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using GameDay_Sync.Model;
 
-namespace GameDay_Sync.Service.Extraction;
+namespace GameDay_Sync.Services.Extraction;
 
 public class ExtractionService(HttpClient httpClient)
 {
