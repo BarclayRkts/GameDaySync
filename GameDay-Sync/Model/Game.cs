@@ -8,6 +8,9 @@ public class Game
     public string Id { get; set; } = string.Empty; // Unique fixture ID from API
         
     [Required]
+    public string EventName { get; set; } = string.Empty; // e.g., "Houston Rockets vs Golden State Warriors"
+    
+    [Required]
     public string TeamName { get; set; } = string.Empty; // e.g., "Houston Rockets"
         
     [Required]

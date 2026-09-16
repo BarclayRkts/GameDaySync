@@ -1,5 +1,6 @@
 ﻿using GameDay_Sync.Service;
 using GameDay_Sync.Service.Extraction;
+using GameDay_Sync.Service.Load;
 
 namespace GameDay_Sync.Extensions;
 
@@ -9,7 +10,8 @@ public static class DependencyInjection
     {
         // Register HttpClient and your SportsDataService
         services.AddHttpClient<ExtractionService>();
-        services.AddTransient<Pipeline>();
+        services.AddScoped<LoadService>();
+        services.AddScoped<Pipeline>();
 
         return services;
     }
