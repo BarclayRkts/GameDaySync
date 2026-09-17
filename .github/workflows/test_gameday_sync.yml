@@ -2,13 +2,30 @@ name: Test GameDay Sync (Manual & Schedule)
 
 on:
   schedule:
-    - cron: '5 15 * * *'  # Target: 10:05 AM Central Time (15:05 UTC) -> Daily Test
-    - cron: '6 15 * * *'  # Target: 10:06 AM Central Time (15:06 UTC) -> Weekly Test
-  workflow_dispatch:      # Allows instant manual testing
+    - cron: '5 15 * * *'
+    - cron: '6 15 * * *'
+  workflow_dispatch:
 
 jobs:
   run-gameday-sync:
     runs-on: ubuntu-latest
+
+    # --- SPIN UP POSTGRESQL DATABASE ---
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: gameday_sync
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        # Wait until postgres is healthy before starting the .NET build
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout Repository
@@ -18,23 +35,24 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0'
-      
-      # Points directly to the project folder using the exact dash formatting
+
       - name: Restore Dependencies
         run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
       
+      # --- OPTIONAL: RUN MIGRATIONS IF NEEDED ---
+      # Un-comment the next two lines if your app needs to build tables before running
+      # - name: Database Migration
+      #   run: dotnet ef database update --project GameDay-Sync
+      
       # --- ROUTING FOR TEST STEPS ---
-      # Points to the project folder and passes the --daily flag to your app
       - name: Run Daily Notification Test
         if: github.event.schedule == '5 15 * * *'
         run: dotnet run --project GameDay-Sync -- --daily
-      
-      # Points to the project folder and passes the --weekly flag to your app
+
       - name: Run Weekly Notification Test
         if: github.event.schedule == '6 15 * * *'
         run: dotnet run --project GameDay-Sync -- --weekly
-      
-      # This runs when you click the manual button in your GitHub dashboard
+
       - name: Manual Run Execution
         if: github.event_name == 'workflow_dispatch'
         run: dotnet run --project GameDay-Sync -- --daily
