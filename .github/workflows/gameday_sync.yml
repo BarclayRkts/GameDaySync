@@ -30,6 +30,15 @@ jobs:
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
+        
+      # --- CREATE TABLES ON INITIAL LOAD ---
+      - name: Migrate Production Neon Database
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+        run: |
+          rm -rf GameDay-Sync/Migrations/*
+          dotnet ef migrations add ProductionReset --project GameDay-Sync --startup-project GameDay-Sync
+          dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
       
       # --- AUTOMATED CRON INTERVAL ROUTING ---
       - name: Run Daily Notification Route
