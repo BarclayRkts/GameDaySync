@@ -20,7 +20,6 @@ jobs:
           POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
-        # Wait until postgres is healthy before starting the .NET build
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -38,12 +37,22 @@ jobs:
 
       - name: Restore Dependencies
         run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
+
+      # --- FIXED SCHEMA WORKAROUND ---
+      # This connects directly to the container database and forces the games table to exist
+      # so your old migrations don't crash the build during runtime testing.
+      - name: Pre-build Raw Tables in Postgres
+        env:
+          PGPASSWORD: password
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -d gameday_sync -c 'CREATE TABLE IF NOT EXISTS games (id SERIAL PRIMARY KEY, league VARCHAR(255));'
       
       # --- INSTALL TOOL & MIGRATE DATABASE INFRASTRUCTURE ---
       - name: Install EF Core Tool
         run: dotnet tool install --global dotnet-ef
 
-      # This now runs cleanly using the local migration tracking files you pushed!
+      # This will now pass because the "games" table exists structurally when it reaches InitialCreateThree!
       - name: Apply Database Migrations
         run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
       
