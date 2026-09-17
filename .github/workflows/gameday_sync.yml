@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 13 * * *'  # Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
     - cron: '0 13 * * 1'  # Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
-  workflow_dispatch:      # Keeps manual run button active
+  workflow_dispatch:      # manual run button
 
 jobs:
   run-gameday-sync:
@@ -26,7 +26,7 @@ jobs:
         run: dotnet tool install --global dotnet-ef
 
       # --- CLEAN PLATFORM DATABASE BLUEPRINT ---
-      # Deletes broken VM migration histories, checks active models, and provisions Neon tables.
+      # Deletes broken VM migration histories, checks active models, and creates Neon tables.
       - name: Migrate Production Neon Database Schema
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
@@ -49,7 +49,7 @@ jobs:
         run: dotnet run --project GameDay-Sync -- --weekly
 
       # --- MANUAL TRIGGER OVERRIDE ---
-      # Default testing fallback updated to run the --weekly route when triggered manually!
+      # Default testing fallback updated to run the --weekly route when triggered manually.
       - name: Manual Run Execution
         if: github.event_name == 'workflow_dispatch'
         env:
