@@ -2,9 +2,9 @@ name: Production GameDay Sync Automation
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Runs every single day at 8:00 AM UTC
-    - cron: '0 8 * * 1'  # Runs every Monday at 8:00 AM UTC
-  workflow_dispatch:
+    - cron: '0 13 * * *'  # Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '0 13 * * 1'  # Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
+  workflow_dispatch:      # Keeps manual run button active
 
 jobs:
   run-gameday-sync:
@@ -25,14 +25,9 @@ jobs:
       - name: Install EF Core Tool
         run: dotnet tool install --global dotnet-ef
 
-      # Automatically applies your local migration blueprints straight onto Neon
-      - name: Migrate Production Neon Database
-        env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
-        run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
-        
-      # --- CREATE TABLES ON INITIAL LOAD ---
-      - name: Migrate Production Neon Database
+      # --- CLEAN PLATFORM DATABASE BLUEPRINT ---
+      # Deletes broken VM migration histories, checks active models, and provisions Neon tables.
+      - name: Migrate Production Neon Database Schema
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: |
@@ -42,18 +37,19 @@ jobs:
       
       # --- AUTOMATED CRON INTERVAL ROUTING ---
       - name: Run Daily Notification Route
-        if: github.event.schedule == '0 8 * * *'
+        if: github.event.schedule == '0 13 * * *'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --daily
 
       - name: Run Weekly Notification Route
-        if: github.event.schedule == '0 8 * * 1'
+        if: github.event.schedule == '0 13 * * 1'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --weekly
 
       # --- MANUAL TRIGGER OVERRIDE ---
+      # Default testing fallback updated to run the --weekly route when triggered manually!
       - name: Manual Run Execution
         if: github.event_name == 'workflow_dispatch'
         env:
