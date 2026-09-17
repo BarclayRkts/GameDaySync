@@ -53,7 +53,7 @@ jobs:
       # --- ROUTING FOR TEST STEPS ---
       - name: Run Daily Notification Test
         if: github.event.schedule == '5 15 * * *'
-        run: dotnet run --project GameDay-Sync -- --daily
+        run: dotnet run --project GameDay-Sync -- -weekly
 
       - name: Run Weekly Notification Test
         if: github.event.schedule == '6 15 * * *'
@@ -62,4 +62,4 @@ jobs:
       # This step handles your instant "Run workflow" clicks in the browser dashboard
       - name: Manual Run Execution
         if: github.event_name == 'workflow_dispatch'
-        run: dotnet run --project GameDay-Sync -- --daily
+        run: dotnet run --project GameDay-Sync -- --weekly
