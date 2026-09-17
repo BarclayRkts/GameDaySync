@@ -43,6 +43,9 @@ jobs:
       - name: Install EF Core Tool
         run: dotnet tool install --global dotnet-ef
 
+      - name: Ensure Database Schema Base
+        run: dotnet run --project GameDay-Sync --context AppDbContext -- --ensure-db
+
       - name: Apply Database Migrations
         run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
       
