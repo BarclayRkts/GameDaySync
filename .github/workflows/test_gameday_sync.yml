@@ -1,0 +1,37 @@
+name: Test GameDay Sync (Manual & Schedule)
+
+on:
+  schedule:
+    - cron: '5 15 * * *'  # Target: 10:05 AM Central Time (15:05 UTC) -> Daily Test
+    - cron: '6 15 * * *'  # Target: 10:06 AM Central Time (15:06 UTC) -> Weekly Test
+  workflow_dispatch:      # <-- THIS ALLOWS INSTANT TESTING RIGHT NOW
+
+jobs:
+  run-gameday-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+      
+      # --- ROUTING FOR TEST STEPS ---
+      - name: Run Daily Notification Test
+        if: github.event.schedule == '5 15 * * *'
+        run: dotnet run --project GameDay_Sync -- --daily
+
+      - name: Run Weekly Notification Test
+        if: github.event.schedule == '6 15 * * *'
+        run: dotnet run --project GameDay_Sync -- --weekly
+      
+      # This runs if you click the manual gray button on GitHub
+      - name: Manual Run Execution
+        if: github.event_name == 'workflow_dispatch'
+        run: dotnet run --project GameDay_Sync -- --daily
