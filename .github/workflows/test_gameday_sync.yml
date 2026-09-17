@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '5 15 * * *'  # Target: 10:05 AM Central Time (15:05 UTC) -> Daily Test
     - cron: '6 15 * * *'  # Target: 10:06 AM Central Time (15:06 UTC) -> Weekly Test
-  workflow_dispatch:      # <-- THIS ALLOWS INSTANT TESTING RIGHT NOW
+  workflow_dispatch:      # Allows instant manual testing
 
 jobs:
   run-gameday-sync:
@@ -18,20 +18,23 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0'
-
+      
+      # Points directly to the project folder using the exact dash formatting
       - name: Restore Dependencies
         run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
       
       # --- ROUTING FOR TEST STEPS ---
+      # Points to the project folder and passes the --daily flag to your app
       - name: Run Daily Notification Test
         if: github.event.schedule == '5 15 * * *'
-        run: dotnet run -- --daily
-
+        run: dotnet run --project GameDay-Sync -- --daily
+      
+      # Points to the project folder and passes the --weekly flag to your app
       - name: Run Weekly Notification Test
         if: github.event.schedule == '6 15 * * *'
-        run: dotnet run -- --weekly
+        run: dotnet run --project GameDay-Sync -- --weekly
       
-      # This runs if you click the manual gray button on GitHub
+      # This runs when you click the manual button in your GitHub dashboard
       - name: Manual Run Execution
         if: github.event_name == 'workflow_dispatch'
-        run: dotnet run -- --daily
+        run: dotnet run --project GameDay-Sync -- --daily
