@@ -6,11 +6,10 @@ using GameDay_Sync.Services.Notifications;
 
 namespace GameDay_Sync.Extensions;
 
-public static class DependencyInjection
+public static class PipelineServiceCollectionExtensions
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        // Register HttpClient and your SportsDataService
         services.AddHttpClient<ExtractionService>();
         services.AddScoped<LoadService>();
         services.AddScoped<GamesRepo>();

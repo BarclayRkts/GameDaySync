@@ -6,8 +6,10 @@ namespace GameDay_Sync.Services.Load;
 
 public class LoadService(AppDbContext appDbContext)
 {
-    public async Task SaveGames(List<SportsDbEvent> games)
+    public async Task<int> SaveGames(List<SportsDbEvent> games)
     {
+        var gamesAdded = 0;
+
         foreach (var sportEvent in games)
         {
             DateTime timeStampToUtcDateTime = DateTime.Parse(sportEvent.StrTimestamp, CultureInfo.InvariantCulture,
@@ -28,10 +30,12 @@ public class LoadService(AppDbContext appDbContext)
                 };
 
                 appDbContext.Games.Add(newEvent);
+                gamesAdded++;
             }
 
         }
         
-        await appDbContext.SaveChangesAsync(); 
+        await appDbContext.SaveChangesAsync();
+        return gamesAdded;
     }
 }

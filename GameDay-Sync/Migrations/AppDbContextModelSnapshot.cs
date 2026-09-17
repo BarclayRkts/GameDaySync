@@ -83,6 +83,133 @@ namespace GameDay_Sync.Migrations
 
                     b.ToTable("games", (string)null);
                 });
+
+            modelBuilder.Entity("GameDay_Sync.Model.SyncLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("DurationMs")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
+                        .HasColumnName("duration_ms");
+
+                    b.Property<int>("GamesAdded")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("games_added");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("message");
+
+                    b.Property<DateTime>("RunAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("run_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("sync_logs", (string)null);
+                });
+
+            modelBuilder.Entity("GameDay_Sync.Model.TrackedTeam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("category");
+
+                    b.Property<DateTime>("DateAdded")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date_added")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("SportsDbId")
+                        .HasColumnType("integer")
+                        .HasColumnName("sportsdb_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SportsDbId")
+                        .IsUnique();
+
+                    b.ToTable("tracked_teams", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Team",
+                            DateAdded = new DateTime(2026, 9, 17, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Houston Astros",
+                            SportsDbId = 135256
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Team",
+                            DateAdded = new DateTime(2026, 9, 17, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Tottenham Hotspur",
+                            SportsDbId = 133616
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Team",
+                            DateAdded = new DateTime(2026, 9, 17, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Dallas Mavericks",
+                            SportsDbId = 134876
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Team",
+                            DateAdded = new DateTime(2026, 9, 17, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Name = "Houston Texans",
+                            SportsDbId = 134926
+                        });
+                });
 #pragma warning restore 612, 618
         }
     }

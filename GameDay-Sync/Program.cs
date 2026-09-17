@@ -1,5 +1,6 @@
 using GameDay_Sync.Data;
 using GameDay_Sync.Extensions;
+using GameDay_Sync.Extensions.DependencyInjection;
 using GameDay_Sync.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,23 +8,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddDataLayer(builder.Configuration);
 builder.Services.AddServices();
+builder.Services.AddAdminApi();
+builder.Services.AddControllers();
+
+const string adminFrontendCorsPolicy = "AdminFrontendCors";
+var allowedFrontendOrigins = builder.Configuration
+    .GetSection("AdminFrontend:AllowedOrigins")
+    .Get<string[]>() ?? ["http://localhost:3000"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(adminFrontendCorsPolicy, policy =>
+    {
+        policy.WithOrigins(allowedFrontendOrigins)
+            .AllowAnyHeader()
+            .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+    });
+});
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (args.Length > 0)
 {
+    using var scope = app.Services.CreateScope();
     var pipeline = scope.ServiceProvider.GetRequiredService<Pipeline>();
-    string alertChoice = args.Length > 0 ? args[0] : "--weekly";
-    
-    await pipeline.RunPipeline(alertChoice);
-    
-    if (args.Length > 0)
-    {
-        Environment.Exit(0); // 0 means finished successfully!
-    }
-};
+    await pipeline.RunPipeline(args[0]);
+    return;
+}
 
 app.UseHttpsRedirection();
 
+app.UseCors(adminFrontendCorsPolicy);
+
+app.MapControllers();
 
 app.Run();

@@ -8,6 +8,21 @@ public class SportsDbResponse
     public List<SportsDbEvent>? Events { get; set; }
 }
 
+public class SportsDbTeamSearchResponse
+{
+    [JsonPropertyName("teams")]
+    public List<SportsDbTeam>? Teams { get; set; }
+}
+
+public class SportsDbTeam
+{
+    [JsonPropertyName("idTeam")]
+    public string IdTeam { get; set; } = string.Empty;
+
+    [JsonPropertyName("strTeam")]
+    public string Name { get; set; } = string.Empty;
+}
+
 // Mirrors the individual event fields inside the raw JSON payload
 public class SportsDbEvent
 {

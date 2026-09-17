@@ -1,0 +1,61 @@
+﻿Prompt 1:
+
+Act as an expert frontend engineer and a principal software architect. I need you to build an Administrative Dashboard for my automated sports syncing project called "GameDay Sync". 
+
+The backend is a .NET application running on a headless GitHub Actions cron job every day at 8:00 AM Central. It fetches upcoming match data from a sports API and stores it in a Neon PostgreSQL database.
+
+CRITICAL BACKEND & FRONTEND ARCHITECTURE CONSTRAINTS:
+
+1. FRONTEND ISOLATION & ROUTING:
+   - All Next.js UI code, configuration files, package.json, and source files must live entirely inside a dedicated subfolder at the root of my repository named exactly "frontend".
+   - The entire administration experience must be nested under the explicit Next.js sub-route path: "/admin" (e.g., /admin, /admin/games, /admin/targets).
+   - Please build a clean, modern dashboard using Next.js (App Router), Tailwind CSS, and shadcn/ui components. The theme should feel like a premium dev tool (dark mode by default, clean typography, subtle borders, high information density).
+
+2. .NET CORE WEB API STRUCTURE:
+   The API endpoints feeding data to this frontend must be written in C# and integrated into my existing .NET project following a strict clean-architecture pattern. Please organize the backend files into these specific directories:
+   - Controllers/ : Contains the API Controllers (inheriting from ControllerBase) handling HTTP routing, route decorators, and parameter extraction. Use Web API.
+   - Repositories/ : Contains the data access layers and raw LINQ / Entity Framework DbContext queries to read from the Neon PostgreSQL database.
+   - Services/ : Contains the business logic layer, orchestrating data transformations between the repositories and the controller.
+   - Models/ : Contains new Data Transfer Objects (DTOs), ViewModels, and data contract entities used to pass payloads across the API layer safely.
+   - Extensions/DependencyInjection/ : Contains clean static extension methods (e.g., ServiceCollectionExtensions) to handle the explicit registration (AddScoped, AddTransient) of all your new repositories and services via IServiceCollection.
+
+REQUIRED FRONTEND LAYOUT & VIEWS (Nested under /admin):
+1. A base layout with a sidebar navigation containing: Dashboard Overview, Games Database, Target Management, and Sync Logs.
+2. Dashboard Overview Screen: 
+   - A row of 4 KPI metrics cards: "Total Synced Games", "System Status" (with a green pulsing dot indicating Active), "Last Run Time" (e.g., Today, 8:04 AM), and "Next Scheduled Run" (e.g., Tomorrow, 8:00 AM).
+   - A lightweight chart placeholder showing "API Data Pull Latency" or "Games Added per Day".
+3. Target Management Screen:
+   - A data table displaying active SportsDB Team IDs or League IDs currently being tracked (Columns: ID, Name, Category, Date Added, Status).
+   - A clean dialog modal form triggered by a "+ Add New Target" button to add a new Team ID or League ID input.
+4. Games Database Screen:
+   - A robust data table with pagination, search, and filtering to inspect what is currently sitting inside the database table matching this exact relational schema:
+     - id (int)
+     - event_name (string)
+     - league (string)
+     - game_time (datetime)
+     - team_name (string)
+     - opponent_name (string)
+     - created_at / updated_at (datetime)
+
+OUTPUT REQUIREMENTS:
+- Please provide a visual folder tree structure diagram showing exactly how the files inside the /frontend subfolder and the C# directories relative to each other at the root of the repository.
+- Write the complete, modular code for these frontend views using mock data that accurately reflects this schema structure, along with the full matching C# backend layers. Optimize for high scannability.
+
+
+Prompts 2:
+Act as a senior product designer and UI developer. I need you to build a public fan-facing Schedule Hub website for my project "GameDay Sync". 
+
+The project aggregates upcoming matches from a PostgreSQL database. I want the frontend to look like an incredibly clean, fast, and modern sports directory (think ESPN meets Linear app—minimalist, bold accent colors, clean scoreboard cards, highly responsive).
+
+Please build this using Next.js, Tailwind CSS, and Lucide Icons. Make it light-mode clean with a vibrant accent color (like an energetic athletic neon green or electric blue).
+
+Include the following pages and components:
+1. Header Navigation: Minimalist branding logo "GameDay Sync", a search bar to look up teams, and a league toggle (All, NFL, Premier League, NBA, etc.).
+2. Main Schedule Grid Page:
+   - Organized chronologically with date headers (e.g., "Today — Thursday, Sept 17", "Tomorrow — Friday, Sept 18").
+   - Under each date, render match-up cards. Each card must look like a compact scoreboard: displaying the League name badge, Team Name vs. Opponent Name, and the Game Time clearly formatted in bold text.
+   - Include a visual indicator badge on the card if the match is happening "Today".
+3. Team Profile View Component:
+   - A dedicated view that shows a selected team's header profile card (Team Name, logo placeholder, primary league) and a filtered chronological list of just their upcoming matches.
+
+Please write clean, reusable React components with mock sports data that perfectly maps to these features. Make the match-up cards feel interactive and punchy.
