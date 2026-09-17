@@ -35,24 +35,18 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0'
-
+          
       - name: Restore Dependencies
         run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
       
-      # --- OPTIONAL: RUN MIGRATIONS IF NEEDED ---
-      # Un-comment the next two lines if your app needs to build tables before running
-      # - name: Database Migration
-      #   run: dotnet ef database update --project GameDay-Sync
+      # --- NEW: INSTALL TOOL & MIGRATE DATABASE INFRASTRUCTURE ---
+      - name: Install EF Core Tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply Database Migrations
+        run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
       
       # --- ROUTING FOR TEST STEPS ---
       - name: Run Daily Notification Test
         if: github.event.schedule == '5 15 * * *'
-        run: dotnet run --project GameDay-Sync -- --daily
-
-      - name: Run Weekly Notification Test
-        if: github.event.schedule == '6 15 * * *'
-        run: dotnet run --project GameDay-Sync -- --weekly
-
-      - name: Manual Run Execution
-        if: github.event_name == 'workflow_dispatch'
         run: dotnet run --project GameDay-Sync -- --daily
