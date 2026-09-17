@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
       
       # --- ROUTING FOR TEST STEPS ---
       - name: Run Daily Notification Test
