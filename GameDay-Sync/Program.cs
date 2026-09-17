@@ -16,6 +16,11 @@ using (var scope = app.Services.CreateScope())
     string alertChoice = args.Length > 0 ? args[0] : "--weekly";
     
     await pipeline.RunPipeline(alertChoice);
+    
+    if (args.Length > 0)
+    {
+        Environment.Exit(0); // 0 means finished successfully!
+    }
 };
 
 app.UseHttpsRedirection();
