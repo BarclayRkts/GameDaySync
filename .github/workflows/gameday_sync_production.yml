@@ -2,8 +2,8 @@ name: Production GameDay Sync Automation
 
 on:
   schedule:
-    - cron: '5 16 * * *'  # Trigger A: Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
-    - cron: '6 16 * * *'  # Trigger B: Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '0 8 * * *'  # Trigger A: Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '0 8 * * 1'  # Trigger B: Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
   workflow_dispatch:      # Manual run button
 
 jobs:
