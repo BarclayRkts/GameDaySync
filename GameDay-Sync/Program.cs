@@ -12,9 +12,14 @@ builder.Services.AddAdminApi();
 builder.Services.AddControllers();
 
 const string adminFrontendCorsPolicy = "AdminFrontendCors";
+string[] defaultAllowedFrontendOrigins =
+[
+    "http://localhost:3000",
+    "https://gamedaysync.vercel.app"
+];
 var allowedFrontendOrigins = builder.Configuration
     .GetSection("AdminFrontend:AllowedOrigins")
-    .Get<string[]>() ?? ["http://localhost:3000"];
+    .Get<string[]>() ?? defaultAllowedFrontendOrigins;
 
 builder.Services.AddCors(options =>
 {

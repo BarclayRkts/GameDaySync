@@ -7,9 +7,14 @@ import type {
   TrackedTeamDto,
 } from "./types";
 
+const LOCAL_API_BASE_URL = "http://localhost:5123";
+const PRODUCTION_API_BASE_URL = "https://gamedaysync.onrender.com";
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ??
-  (process.env.NODE_ENV === "development" ? "http://localhost:5123" : "");
+  (process.env.NODE_ENV === "production"
+    ? PRODUCTION_API_BASE_URL
+    : LOCAL_API_BASE_URL);
 
 export class ApiError extends Error {
   constructor(
