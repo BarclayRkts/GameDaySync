@@ -34,7 +34,7 @@ jobs:
       # --- AUTOMATED DAILY CRON ROUTE ---
       # Executes only when the 7-day daily cron string triggers
       - name: Run Daily Notification Route
-        if: github.event.schedule == '0 13 * * *'
+        if: github.event.schedule == '45 15 * * *'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --daily
@@ -42,7 +42,7 @@ jobs:
       # --- AUTOMATED WEEKLY CRON ROUTE ---
       # Executes only when the Monday-specific cron string triggers
       - name: Run Weekly Notification Route
-        if: github.event.schedule == '0 13 * * 1'
+        if: github.event.schedule == '42 15 * * *'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --weekly
