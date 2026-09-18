@@ -1,4 +1,4 @@
-name: Production GameDay Sync Automation
+name: GameDay Sync Automation
 
 on:
   schedule:
