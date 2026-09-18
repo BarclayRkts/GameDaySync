@@ -1,0 +1,56 @@
+name: Production GameDay Sync Automation
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # Trigger A: Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '0 13 * * 1'  # Trigger B: Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
+  workflow_dispatch:      # Manual run button
+
+jobs:
+  run-gameday-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore Dependencies
+        run: dotnet restore GameDay-Sync/GameDay-Sync.csproj
+
+      - name: Install EF Core Tool
+        run: dotnet tool install --global dotnet-ef
+
+      # --- SAFE DATABASE SCHEMA SYNC ---
+      - name: Migrate Production Neon Database Schema
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+        run: dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
+      
+      # --- AUTOMATED DAILY CRON ROUTE ---
+      # Executes only when the 7-day daily cron string triggers
+      - name: Run Daily Notification Route
+        if: github.event.schedule == '0 13 * * *'
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+        run: dotnet run --project GameDay-Sync -- --daily
+
+      # --- AUTOMATED WEEKLY CRON ROUTE ---
+      # Executes only when the Monday-specific cron string triggers
+      - name: Run Weekly Notification Route
+        if: github.event.schedule == '0 13 * * 1'
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+        run: dotnet run --project GameDay-Sync -- --weekly
+
+      # --- MANUAL TRIGGER OVERRIDE ---
+      # Runs the weekly pipeline as a baseline test whenever you hit the "Run workflow" button manually
+      - name: Manual Run Execution
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+        run: dotnet run --project GameDay-Sync -- --weekly
