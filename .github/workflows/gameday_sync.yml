@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 13 * * *'  # Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
     - cron: '0 13 * * 1'  # Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
-  workflow_dispatch:      # manual run button
+#  workflow_dispatch:      # manual run button
 
 jobs:
   run-gameday-sync:
