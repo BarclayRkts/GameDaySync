@@ -2,8 +2,8 @@ name: Production GameDay Sync Automation
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Trigger A: Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
-    - cron: '0 8 * * 1'  # Trigger B: Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '23 10 * * *'  # Trigger A: Runs EVERY DAY at 8:00 AM Central Time (13:00 UTC)
+    - cron: '23 10 * * 1'  # Trigger B: Runs EVERY MONDAY at 8:00 AM Central Time (13:00 UTC)
   workflow_dispatch:      # Manual run button
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
       # --- AUTOMATED DAILY CRON ROUTE ---
       # Executes only when the 7-day daily cron string triggers
       - name: Run Daily Notification Route
-        if: github.event.schedule == '0 8 * * *'
+        if: github.event.schedule == '23 10 * * *'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --daily
@@ -42,7 +42,7 @@ jobs:
       # --- AUTOMATED WEEKLY CRON ROUTE ---
       # Executes only when the Monday-specific cron string triggers
       - name: Run Weekly Notification Route
-        if: github.event.schedule == '0 8 * * 1'
+        if: github.event.schedule == '23 10 * * 1'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
         run: dotnet run --project GameDay-Sync -- --weekly
