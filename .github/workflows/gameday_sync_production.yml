@@ -29,6 +29,7 @@ jobs:
       - name: Migrate Production Neon Database Schema
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+          NotificationSettings__DiscordWebhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
           dotnet ef database update --project GameDay-Sync --startup-project GameDay-Sync
@@ -39,6 +40,7 @@ jobs:
         if: github.event.schedule == '23 10 * * *'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+          NotificationSettings__DiscordWebhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: dotnet run --project GameDay-Sync -- --daily
 
       # --- AUTOMATED WEEKLY CRON ROUTE ---
@@ -47,6 +49,7 @@ jobs:
         if: github.event.schedule == '23 10 * * 1'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+          NotificationSettings__DiscordWebhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: dotnet run --project GameDay-Sync -- --weekly
 
       # --- MANUAL TRIGGER OVERRIDE ---
@@ -55,4 +58,5 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
+          NotificationSettings__DiscordWebhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: dotnet run --project GameDay-Sync -- --weekly
