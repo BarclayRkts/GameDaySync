@@ -9,8 +9,16 @@ public class MessageFormatter
     {
         var sb = new StringBuilder();
         sb.AppendLine("📅 🚀 **WEEKLY SPORTS SCHEDULE UPDATE** 🚀 📅");
-        sb.AppendLine("Here are the upcoming games involving your target teams:");
         sb.AppendLine("---------------------------------------------------------");
+
+        if (games.Count == 0)
+        {
+            sb.AppendLine("No games are scheduled for your target teams this week.");
+            sb.AppendLine("---------------------------------------------------------");
+            return sb.ToString();
+        }
+
+        sb.AppendLine("Here are the upcoming games involving your target teams:");
 
         foreach (var game in games)
         {
@@ -32,8 +40,16 @@ public class MessageFormatter
     {
         var sb = new StringBuilder();
         sb.AppendLine("🚨 🔥 📢 **IT'S GAME DAY! GET HYPED!** 📢 🔥 🚨");
-        sb.AppendLine("Your teams are in action today! Catch the schedules below:");
         sb.AppendLine("=========================================================");
+
+        if (games.Count == 0)
+        {
+            sb.AppendLine("No games are scheduled for your target teams today.");
+            sb.AppendLine("=========================================================");
+            return sb.ToString();
+        }
+
+        sb.AppendLine("Your teams are in action today! Catch the schedules below:");
 
         foreach (var game in games)
         {

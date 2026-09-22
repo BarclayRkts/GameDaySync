@@ -59,4 +59,4 @@ jobs:
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.CONNECTION_STRING }}
           NotificationSettings__DiscordWebhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: dotnet run --project GameDay-Sync -- --weekly
+        run: dotnet run --project GameDay-Sync -- --daily

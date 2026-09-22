@@ -11,7 +11,6 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
         if (gamesThisWeek.Count == 0)
         {
             Console.WriteLine("No new games scheduled for this week.");
-            return;
         }
 
         string messageBody = formatter.BuildWeeklyMessage(gamesThisWeek);
@@ -36,7 +35,6 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
         if (gamesToday.Count == 0)
         {
             Console.WriteLine("No games scheduled for today.");
-            return;
         }
         
         string messageBody = formatter.BuildDailyMessage(gamesToday);
