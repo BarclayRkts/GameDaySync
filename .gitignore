@@ -11,3 +11,5 @@
 
 appsettings.json
 Prompts.txt
+.secrets
+sports_notification_blueprint.txt
