@@ -36,7 +36,19 @@ export function LatencyChart({ data }: LatencyChartProps) {
         <div className="flex items-end gap-3 h-48 px-1">
           {data.map((d, i) => {
             const heightPct = Math.max((d.latencyMs / maxLatency) * 100, 4);
-            const label = new Date(d.day).toLocaleDateString("en-US", { weekday: "short" });
+            const runAt = new Date(d.day);
+            const dateLabel = runAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            const timeLabel = runAt.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+            const timestamp = runAt.toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "2-digit",
+              timeZoneName: "short",
+            });
             return (
               <div key={`${d.day}-${i}`} className="flex-1 flex flex-col items-center gap-2 group">
                 <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
@@ -44,11 +56,15 @@ export function LatencyChart({ data }: LatencyChartProps) {
                 </span>
                 <div className="w-full flex items-end justify-center h-36">
                   <div
+                    title={`${timestamp}: ${d.latencyMs}ms, ${d.gamesAdded} games added`}
                     className="w-full max-w-8 rounded-t-sm bg-gradient-to-t from-primary/30 to-primary/80 transition-all group-hover:to-emerald-400"
                     style={{ height: `${heightPct}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-muted-foreground">{label}</span>
+                <span className="text-[10px] leading-tight text-center text-muted-foreground">
+                  <span className="block">{dateLabel}</span>
+                  <span className="block">{timeLabel}</span>
+                </span>
               </div>
             );
           })}

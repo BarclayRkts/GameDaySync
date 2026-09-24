@@ -29,6 +29,16 @@ function formatRelative(iso: string | null) {
   return `${date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${time}`;
 }
 
+function formatRunTimestamp(iso: string) {
+  return new Date(iso).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+}
+
 const STATUS_ACCENT: Record<string, "emerald" | "default"> = {
   Active: "emerald",
   Degraded: "default",
@@ -219,7 +229,7 @@ export default function AdminOverviewPage() {
                 <div key={log.id} className="flex items-center justify-between text-sm">
                   <div className="flex flex-col">
                     <span className="font-medium">
-                      {new Date(log.runAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      {formatRunTimestamp(log.runAt)}
                     </span>
                     <span className="text-xs text-muted-foreground">{log.gamesAdded} games added</span>
                   </div>
