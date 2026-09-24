@@ -92,8 +92,17 @@ export function deleteTrackedTeam(id: number): Promise<void> {
   return apiFetch<void>(`/api/tracked-teams/${id}`, { method: "DELETE" });
 }
 
-export function getSyncLogs(take = 30): Promise<SyncLogDto[]> {
-  return apiFetch<SyncLogDto[]>(`/api/sync-logs?take=${take}`);
+export interface SyncLogsListParams {
+  page?: number;
+  pageSize?: number;
+}
+
+export function getSyncLogs(params: SyncLogsListParams = {}): Promise<PagedResult<SyncLogDto>> {
+  const query = new URLSearchParams();
+  query.set("page", String(params.page ?? 1));
+  query.set("pageSize", String(params.pageSize ?? 20));
+
+  return apiFetch<PagedResult<SyncLogDto>>(`/api/sync-logs?${query.toString()}`);
 }
 
 export type PipelineSchedule = "daily" | "weekly";

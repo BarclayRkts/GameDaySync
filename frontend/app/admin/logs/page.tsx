@@ -1,7 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getSyncLogs } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -13,7 +15,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
+
+const PAGE_SIZE = 20;
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleString("en-US", {
@@ -31,10 +35,14 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function SyncLogsPage() {
+  const [page, setPage] = useState(1);
   const syncLogsQuery = useQuery({
-    queryKey: ["syncLogs", 30],
-    queryFn: () => getSyncLogs(30),
+    queryKey: ["syncLogs", { page, pageSize: PAGE_SIZE }],
+    queryFn: () => getSyncLogs({ page, pageSize: PAGE_SIZE }),
+    placeholderData: keepPreviousData,
   });
+  const logs = syncLogsQuery.data?.items ?? [];
+  const totalPages = syncLogsQuery.data?.totalPages ?? 1;
 
   return (
     <div className="space-y-6">
@@ -79,7 +87,7 @@ export default function SyncLogsPage() {
               ))}
 
             {!syncLogsQuery.isLoading &&
-              syncLogsQuery.data?.map((log) => (
+              logs.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell className="text-sm">{fmt(log.runAt)}</TableCell>
                   <TableCell>
@@ -93,7 +101,7 @@ export default function SyncLogsPage() {
                 </TableRow>
               ))}
 
-            {!syncLogsQuery.isLoading && !syncLogsQuery.isError && syncLogsQuery.data?.length === 0 && (
+            {!syncLogsQuery.isLoading && !syncLogsQuery.isError && logs.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-sm text-muted-foreground py-8">
                   No sync runs recorded yet.
@@ -102,6 +110,39 @@ export default function SyncLogsPage() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <span>
+          {syncLogsQuery.data
+            ? `Showing ${logs.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–${
+                (page - 1) * PAGE_SIZE + logs.length
+              } of ${syncLogsQuery.data.totalCount} runs`
+            : "Loading runs…"}
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8"
+            disabled={page <= 1 || syncLogsQuery.isFetching}
+            onClick={() => setPage((current) => current - 1)}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <span className="text-xs">
+            Page {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-8"
+            disabled={page >= totalPages || syncLogsQuery.isFetching}
+            onClick={() => setPage((current) => current + 1)}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -9,8 +9,8 @@ namespace GameDay_Sync.Controllers;
 public class SyncLogsController(ISyncLogsService syncLogsService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<SyncLogDto>>> GetSyncLogs([FromQuery] int take = 30)
+    public async Task<ActionResult<PagedResult<SyncLogDto>>> GetSyncLogs([FromQuery] SyncLogsQuery query)
     {
-        return Ok(await syncLogsService.GetRecentAsync(take));
+        return Ok(await syncLogsService.GetPagedAsync(query));
     }
 }

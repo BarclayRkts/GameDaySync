@@ -98,7 +98,7 @@ All endpoints are prefixed by the local or production API base URL.
 | `GET` | `/api/tracked-teams` | Lists tracked teams. |
 | `POST` | `/api/tracked-teams` | Adds a tracked team. Body: `{ "name": "Houston Astros" }`. |
 | `DELETE` | `/api/tracked-teams/{id}` | Removes a tracked team by numeric ID. |
-| `GET` | `/api/sync-logs` | Lists recent pipeline executions. Supports an optional `take` query parameter; defaults to `30`. |
+| `GET` | `/api/sync-logs` | Lists paginated pipeline executions. Supports `page` and `pageSize`; defaults to page `1` with `20` entries. |
 | `POST` | `/api/cron/daily` | Runs the same ingestion and notification routine as `--daily`. Requires `X-Cron-Token`. |
 | `POST` | `/api/cron/weekly` | Runs the same ingestion and notification routine as `--weekly`. Requires `X-Cron-Token`. |
 

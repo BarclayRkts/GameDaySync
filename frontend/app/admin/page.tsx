@@ -72,7 +72,7 @@ export default function AdminOverviewPage() {
 
   const syncLogsQuery = useQuery({
     queryKey: ["syncLogs", 5],
-    queryFn: () => getSyncLogs(5),
+    queryFn: () => getSyncLogs({ pageSize: 5 }),
   });
 
   const pipelineMutation = useMutation({
@@ -220,12 +220,12 @@ export default function AdminOverviewPage() {
               <p className="text-sm text-destructive">Could not load sync logs.</p>
             )}
 
-            {syncLogsQuery.isSuccess && syncLogsQuery.data.length === 0 && (
+            {syncLogsQuery.isSuccess && syncLogsQuery.data.items.length === 0 && (
               <p className="text-sm text-muted-foreground">No sync runs recorded yet.</p>
             )}
 
             {syncLogsQuery.isSuccess &&
-              syncLogsQuery.data.map((log) => (
+              syncLogsQuery.data.items.map((log) => (
                 <div key={log.id} className="flex items-center justify-between text-sm">
                   <div className="flex flex-col">
                     <span className="font-medium">
