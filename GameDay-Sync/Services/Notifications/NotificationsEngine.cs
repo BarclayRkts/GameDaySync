@@ -7,7 +7,7 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
 {
     public async Task SendWeeklyNotifications()
     {
-        var gamesThisWeek = await GetGames("weekly");
+        var gamesThisWeek = await gamesRepo.GetWeeklyGames();
         if (gamesThisWeek.Count == 0)
         {
             Console.WriteLine("No new games scheduled for this week.");
@@ -31,7 +31,7 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
     
     public async Task SendDailyNotifications()
     {
-        var gamesToday = await GetGames("daily");
+        var gamesToday = await gamesRepo.GetDailyGames();
         if (gamesToday.Count == 0)
         {
             Console.WriteLine("No games scheduled for today.");
@@ -53,8 +53,4 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
         }
     }
     
-    private async Task<List<Game>> GetGames(string alertMode)
-    {
-        return await gamesRepo.GetWeeklyGames(alertMode);
-    }
 }

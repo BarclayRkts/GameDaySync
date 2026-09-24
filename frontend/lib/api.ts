@@ -95,3 +95,22 @@ export function deleteTrackedTeam(id: number): Promise<void> {
 export function getSyncLogs(take = 30): Promise<SyncLogDto[]> {
   return apiFetch<SyncLogDto[]>(`/api/sync-logs?take=${take}`);
 }
+
+export type PipelineSchedule = "daily" | "weekly";
+
+export async function triggerPipeline(schedule: PipelineSchedule): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`/api/pipeline/${schedule}`, {
+      method: "POST",
+      cache: "no-store",
+    });
+  } catch {
+    throw new ApiError("Could not reach the dashboard server.", 0);
+  }
+
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new ApiError(body?.error || "The pipeline could not be started.", res.status);
+  }
+}

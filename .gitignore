@@ -12,4 +12,5 @@
 appsettings.json
 Prompts.txt
 .secrets
+frontend/.env.local
 sports_notification_blueprint.txt

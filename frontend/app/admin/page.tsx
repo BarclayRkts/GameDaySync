@@ -1,13 +1,18 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { KpiCard } from "@/components/admin/kpi-card";
 import { LatencyChart } from "@/components/admin/latency-chart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getDashboardSummary, getSyncLogs } from "@/lib/api";
-import { Database, Activity, Clock, CalendarClock, AlertTriangle } from "lucide-react";
+import {
+  getDashboardSummary,
+  getSyncLogs,
+  triggerPipeline,
+} from "@/lib/api";
+import { Database, Activity, Clock, CalendarClock, AlertTriangle, Info, Loader2, Play } from "lucide-react";
 
 function formatRelative(iso: string | null) {
   if (!iso) return "No runs yet";
@@ -49,6 +54,7 @@ function KpiSkeletons() {
 }
 
 export default function AdminOverviewPage() {
+  const queryClient = useQueryClient();
   const summaryQuery = useQuery({
     queryKey: ["dashboardSummary"],
     queryFn: getDashboardSummary,
@@ -59,16 +65,80 @@ export default function AdminOverviewPage() {
     queryFn: () => getSyncLogs(5),
   });
 
+  const pipelineMutation = useMutation({
+    mutationFn: triggerPipeline,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dashboardSummary"] });
+      queryClient.invalidateQueries({ queryKey: ["syncLogs"] });
+    },
+  });
+
+  const triggeredSchedule = pipelineMutation.isSuccess ? pipelineMutation.variables : null;
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Dashboard Overview</h1>
-        <p className="text-sm text-muted-foreground">
-          Live snapshot of the GameDay-Sync ingestion pipeline.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Dashboard Overview</h1>
+          <p className="text-sm text-muted-foreground">
+            Live snapshot of the GameDay-Sync ingestion pipeline.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {(["daily", "weekly"] as const).map((schedule) => {
+            const isRunning =
+              pipelineMutation.isPending && pipelineMutation.variables === schedule;
+            return (
+              <Button
+                key={schedule}
+                variant={schedule === "daily" ? "default" : "outline"}
+                disabled={pipelineMutation.isPending}
+                onClick={() => pipelineMutation.mutate(schedule)}
+              >
+                {isRunning ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
+                Run {schedule === "daily" ? "Daily" : "Weekly"}
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
-      {summaryQuery.isLoading && <KpiSkeletons />}
+      {pipelineMutation.isError && (
+        <Alert variant="destructive">
+          <AlertTriangle className="size-4" />
+          <AlertTitle>Pipeline run failed</AlertTitle>
+          <AlertDescription>
+            {pipelineMutation.error instanceof Error
+              ? pipelineMutation.error.message
+              : "The pipeline could not be started."}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {triggeredSchedule && (
+        <Alert>
+          <Play className="size-4" />
+          <AlertTitle>{triggeredSchedule === "daily" ? "Daily" : "Weekly"} pipeline completed</AlertTitle>
+          <AlertDescription>The dashboard has been refreshed with the latest run data.</AlertDescription>
+        </Alert>
+      )}
+
+      {summaryQuery.isLoading && (
+        <>
+          {process.env.NODE_ENV === "production" && (
+            <Alert>
+              <Info className="size-4" />
+              <AlertTitle>IMPORTANT</AlertTitle>
+              <AlertDescription>
+                If the site has not been active recently, you may encounter initial loading delays or
+                connectivity issues. This is often due to the sleep cycles of free-tier hosting services.
+                Please allow a moment for the instance to wake up.
+              </AlertDescription>
+            </Alert>
+          )}
+          <KpiSkeletons />
+        </>
+      )}
 
       {summaryQuery.isError && (
         <Alert variant="destructive">

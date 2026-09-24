@@ -83,6 +83,7 @@ Open http://localhost:3000. The API allows this local origin through CORS.
 | `NotificationSettings__DiscordWebhookUrl` | Discord webhook used by alert runs | Required for `--daily` and `--weekly` |
 | `CRON_SECRET_TOKEN` | Token required by the cron webhook endpoints | Required in Render and cron-job.org |
 | `NEXT_PUBLIC_API_BASE_URL` | Optional frontend API origin override | `http://localhost:5123` |
+| Frontend `CRON_SECRET_TOKEN` | Server-only token used by the dashboard trigger route; must match the backend token | Required for dashboard triggers |
 
 The frontend selects `http://localhost:5123` outside production and `https://gamedaysync.onrender.com` for production builds. Do not set `NEXT_PUBLIC_API_BASE_URL` in Vercel unless intentionally overriding the production API.
 
@@ -102,6 +103,8 @@ All endpoints are prefixed by the local or production API base URL.
 | `POST` | `/api/cron/weekly` | Runs the same ingestion and notification routine as `--weekly`. Requires `X-Cron-Token`. |
 
 Set `CRON_SECRET_TOKEN` as an environment variable in Render and configure cron-job.org to send the same value in the `X-Cron-Token` request header. Requests with a missing, duplicate, or invalid token receive `401 Unauthorized`.
+
+To enable the **Run Daily** and **Run Weekly** dashboard buttons, configure the same `CRON_SECRET_TOKEN` in the frontend deployment. The Next.js server sends it to the protected API endpoint; the token is never exposed to the browser.
 
 ## Running the ingestion pipeline
 
