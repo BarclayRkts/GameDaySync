@@ -35,7 +35,10 @@ export async function POST(
   try {
     const response = await fetch(`${getApiBaseUrl()}/api/cron/${schedule}`, {
       method: "POST",
-      headers: { "X-Cron-Token": cronToken },
+      headers: {
+        "X-Cron-Token": cronToken,
+        "X-Force-Notifications": "true",
+      },
       cache: "no-store",
     });
 

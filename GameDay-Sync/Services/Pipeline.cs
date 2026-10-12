@@ -14,7 +14,7 @@ public class Pipeline(
     ITrackedTeamsRepository trackedTeamsRepository,
     ISyncLogsRepository syncLogsRepository)
 {
-    public async Task RunPipeline(string alertMode)
+    public async Task RunPipeline(string alertMode, bool includeAlreadyAlerted = false)
     {
         var stopwatch = Stopwatch.StartNew();
         var gamesAdded = 0;
@@ -28,12 +28,12 @@ public class Pipeline(
             if (alertMode.Equals("--weekly", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Executing Weekly Notification Engine...");
-                await notificationsEngine.SendWeeklyNotifications();
+                await notificationsEngine.SendWeeklyNotifications(includeAlreadyAlerted);
             }
             else if (alertMode.Equals("--daily", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Executing Daily Notification Engine...");
-                await notificationsEngine.SendDailyNotifications();
+                await notificationsEngine.SendDailyNotifications(includeAlreadyAlerted);
             }
             else if (!alertMode.Equals("--sync-only", StringComparison.OrdinalIgnoreCase))
             {

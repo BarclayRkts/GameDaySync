@@ -6,7 +6,7 @@ namespace GameDay_Sync.Repository;
 
 public class GamesRepo(AppDbContext appDbContext)
 {
-    public async Task<List<Game>> GetDailyGames()
+    public async Task<List<Game>> GetDailyGames(bool includeAlreadyAlerted = false)
     {
         var startUtc = GetCentralDayStartUtc();
         var endUtc = GetCentralDayStartUtc(daysFromToday: 1);
@@ -15,12 +15,12 @@ public class GamesRepo(AppDbContext appDbContext)
         return await appDbContext.Games
             .Where(t => t.GameTime >= startUtc &&
                         t.GameTime < endUtc &&
-                        !t.DayAlertSent)
+                        (includeAlreadyAlerted || !t.DayAlertSent))
             .OrderBy(g => g.GameTime)
             .ToListAsync();
     }
 
-    public async Task<List<Game>> GetWeeklyGames()
+    public async Task<List<Game>> GetWeeklyGames(bool includeAlreadyAlerted = false)
     {
         var startUtc = GetCentralDayStartUtc();
         var weekEndUtc = GetCentralDayStartUtc(daysFromToday: 7);
@@ -29,7 +29,7 @@ public class GamesRepo(AppDbContext appDbContext)
         return await appDbContext.Games
             .Where(t => t.GameTime >= startUtc &&
                         t.GameTime < weekEndUtc &&
-                        !t.WeekAlertSent)
+                        (includeAlreadyAlerted || !t.WeekAlertSent))
             .OrderBy(g => g.GameTime)
             .ToListAsync();
     }

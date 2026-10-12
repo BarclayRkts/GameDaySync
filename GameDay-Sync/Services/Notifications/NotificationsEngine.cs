@@ -5,9 +5,9 @@ namespace GameDay_Sync.Services.Notifications;
 
 public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClient, MessageFormatter formatter)
 {
-    public async Task SendWeeklyNotifications()
+    public async Task SendWeeklyNotifications(bool includeAlreadyAlerted = false)
     {
-        var gamesThisWeek = await gamesRepo.GetWeeklyGames();
+        var gamesThisWeek = await gamesRepo.GetWeeklyGames(includeAlreadyAlerted);
         if (gamesThisWeek.Count == 0)
         {
             Console.WriteLine("No new games scheduled for this week.");
@@ -29,9 +29,9 @@ public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClien
         }
     }
     
-    public async Task SendDailyNotifications()
+    public async Task SendDailyNotifications(bool includeAlreadyAlerted = false)
     {
-        var gamesToday = await gamesRepo.GetDailyGames();
+        var gamesToday = await gamesRepo.GetDailyGames(includeAlreadyAlerted);
         if (gamesToday.Count == 0)
         {
             Console.WriteLine("No games scheduled for today.");

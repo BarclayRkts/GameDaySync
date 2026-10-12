@@ -10,6 +10,7 @@ namespace GameDay_Sync.Controllers;
 public class CronSyncController(Pipeline pipeline, IConfiguration configuration) : ControllerBase
 {
     private const string CronTokenHeader = "X-Cron-Token";
+    private const string ForceNotificationsHeader = "X-Force-Notifications";
     private const string CronSecretTokenSetting = "CRON_SECRET_TOKEN";
 
     [HttpPost("daily")]
@@ -20,7 +21,7 @@ public class CronSyncController(Pipeline pipeline, IConfiguration configuration)
             return Unauthorized();
         }
 
-        await pipeline.RunPipeline("--daily");
+        await pipeline.RunPipeline("--daily", HasForceNotifications());
         return Ok();
     }
 
@@ -32,7 +33,7 @@ public class CronSyncController(Pipeline pipeline, IConfiguration configuration)
             return Unauthorized();
         }
 
-        await pipeline.RunPipeline("--weekly");
+        await pipeline.RunPipeline("--weekly", HasForceNotifications());
         return Ok();
     }
 
@@ -53,4 +54,10 @@ public class CronSyncController(Pipeline pipeline, IConfiguration configuration)
         return expectedTokenBytes.Length == suppliedTokenBytes.Length &&
                CryptographicOperations.FixedTimeEquals(expectedTokenBytes, suppliedTokenBytes);
     }
+
+    private bool HasForceNotifications() =>
+        Request.Headers.TryGetValue(ForceNotificationsHeader, out var forceNotifications) &&
+        forceNotifications.Count == 1 &&
+        bool.TryParse(forceNotifications[0], out var force) &&
+        force;
 }
