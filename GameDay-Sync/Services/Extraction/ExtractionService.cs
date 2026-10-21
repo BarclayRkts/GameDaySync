@@ -9,7 +9,7 @@ public class ExtractionService(HttpClient httpClient)
     {
         var normalizedName = teamName.Trim();
         var response = await httpClient.GetFromJsonAsync<SportsDbTeamSearchResponse>(
-            $"https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t={Uri.EscapeDataString(normalizedName)}");
+            $"https://www.thesportsdb.com/api/v1/json/123/searchteams.php?t={Uri.EscapeDataString(normalizedName)}");
         var teams = response?.Teams ?? [];
 
         var team = teams.FirstOrDefault(t =>
@@ -33,7 +33,7 @@ public class ExtractionService(HttpClient httpClient)
 
         foreach (var id in ids)
         {
-            string url = $"https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id={id}";
+            string url = $"https://www.thesportsdb.com/api/v1/json/123/eventsnext.php?id={id}";
             var response = await httpClient.GetFromJsonAsync<SportsDbResponse>(url);
 
 
