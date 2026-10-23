@@ -10,11 +10,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGamesRepository, GamesRepository>();
         services.AddScoped<ITrackedTeamsRepository, TrackedTeamsRepository>();
         services.AddScoped<ISyncLogsRepository, SyncLogsRepository>();
+        services.AddScoped<ISiteVisitsRepository, SiteVisitsRepository>();
 
         services.AddScoped<IGamesQueryService, GamesQueryService>();
         services.AddScoped<ITrackedTeamsService, TrackedTeamsService>();
         services.AddScoped<ISyncLogsService, SyncLogsService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<ISiteVisitsService, SiteVisitsService>();
 
         return services;
     }

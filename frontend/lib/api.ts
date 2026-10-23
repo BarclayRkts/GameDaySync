@@ -3,8 +3,10 @@ import type {
   DashboardSummaryDto,
   GameDto,
   PagedResult,
+  RecordVisitRequest,
   SyncLogDto,
   TrackedTeamDto,
+  VisitStatsDto,
 } from "./types";
 
 const LOCAL_API_BASE_URL = "http://localhost:5123";
@@ -122,4 +124,15 @@ export async function triggerPipeline(schedule: PipelineSchedule): Promise<void>
     const body = (await res.json().catch(() => null)) as { error?: string } | null;
     throw new ApiError(body?.error || "The pipeline could not be started.", res.status);
   }
+}
+
+export function recordVisit(payload: RecordVisitRequest): Promise<void> {
+  return apiFetch<void>("/api/site-visits", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getVisitStats(): Promise<VisitStatsDto> {
+  return apiFetch<VisitStatsDto>("/api/site-visits/stats");
 }

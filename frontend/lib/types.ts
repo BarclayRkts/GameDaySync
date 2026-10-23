@@ -53,3 +53,25 @@ export interface DashboardSummaryDto {
   activeTrackedTeams: number;
   latencySeries: LatencyPointDto[];
 }
+
+export interface RecordVisitRequest {
+  visitorId: string;
+  pagePath: string;
+  referrer?: string | null;
+}
+
+export interface SiteVisitDto {
+  id: number;
+  visitorId: string;
+  pagePath: string;
+  ipAddress: string | null;
+  referrer: string | null;
+  visitedAt: string;
+}
+
+export interface VisitStatsDto {
+  totalVisits: number;
+  uniqueVisitors: number;
+  visitsToday: number;
+  recentVisits: SiteVisitDto[];
+}

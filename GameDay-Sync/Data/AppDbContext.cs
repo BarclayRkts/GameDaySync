@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Game> Games => Set<Game>();
     public DbSet<TrackedTeam> TrackedTeams => Set<TrackedTeam>();
     public DbSet<SyncLog> SyncLogs => Set<SyncLog>();
+    public DbSet<SiteVisit> SiteVisits => Set<SiteVisit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,5 +126,42 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         syncLog.Property(x => x.Message)
             .HasColumnName("message")
             .HasMaxLength(500);
+
+        var siteVisit = modelBuilder.Entity<SiteVisit>();
+
+        siteVisit.ToTable("site_visits");
+        siteVisit.HasKey(x => x.Id);
+
+        siteVisit.Property(x => x.Id).HasColumnName("id");
+
+        siteVisit.Property(x => x.VisitorId)
+            .HasColumnName("visitor_id")
+            .HasMaxLength(100)
+            .IsRequired();
+
+        siteVisit.Property(x => x.PagePath)
+            .HasColumnName("page_path")
+            .HasMaxLength(500)
+            .IsRequired();
+
+        siteVisit.Property(x => x.IpAddress)
+            .HasColumnName("ip_address")
+            .HasMaxLength(64);
+
+        siteVisit.Property(x => x.UserAgent)
+            .HasColumnName("user_agent")
+            .HasMaxLength(500);
+
+        siteVisit.Property(x => x.Referrer)
+            .HasColumnName("referrer")
+            .HasMaxLength(500);
+
+        siteVisit.Property(x => x.VisitedAt)
+            .HasColumnName("visited_at")
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("NOW()");
+
+        siteVisit.HasIndex(x => x.VisitorId);
+        siteVisit.HasIndex(x => x.VisitedAt);
     }
 }

@@ -84,6 +84,57 @@ namespace GameDay_Sync.Migrations
                     b.ToTable("games", (string)null);
                 });
 
+            modelBuilder.Entity("GameDay_Sync.Model.SiteVisit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("ip_address");
+
+                    b.Property<string>("PagePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("page_path");
+
+                    b.Property<string>("Referrer")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("referrer");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("user_agent");
+
+                    b.Property<DateTime>("VisitedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("visited_at")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<string>("VisitorId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("visitor_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VisitedAt");
+
+                    b.HasIndex("VisitorId");
+
+                    b.ToTable("site_visits", (string)null);
+                });
+
             modelBuilder.Entity("GameDay_Sync.Model.SyncLog", b =>
                 {
                     b.Property<int>("Id")

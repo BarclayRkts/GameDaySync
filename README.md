@@ -75,6 +75,16 @@ npm run dev
 
 Open http://localhost:3000. The API allows this local origin through CORS.
 
+## Frontend routes
+
+| Route | Description |
+|---|---|
+| `/admin` | Admin dashboard overview (sync status, latency, recent runs). |
+| `/admin/games` | Games database browser. |
+| `/admin/tracked-teams` | Manage tracked teams. |
+| `/admin/logs` | Paginated sync run history. |
+| `/analytics` | Site visit analytics: total views, unique visitors, views today, and recent visits. Tracked automatically on every page load via a client-side visit tracker. |
+
 ## Configuration
 
 | Setting | Purpose | Local value |
@@ -99,6 +109,8 @@ All endpoints are prefixed by the local or production API base URL.
 | `POST` | `/api/tracked-teams` | Adds a tracked team. Body: `{ "name": "Houston Astros" }`. |
 | `DELETE` | `/api/tracked-teams/{id}` | Removes a tracked team by numeric ID. |
 | `GET` | `/api/sync-logs` | Lists paginated pipeline executions. Supports `page` and `pageSize`; defaults to page `1` with `20` entries. |
+| `POST` | `/api/site-visits` | Records a page view. Body: `{ "visitorId": "...", "pagePath": "/...", "referrer": "..." }`. |
+| `GET` | `/api/site-visits/stats` | Returns total visits, unique visitors, visits today, and the most recent visits. |
 | `POST` | `/api/cron/daily` | Runs the same ingestion and notification routine as `--daily`. Requires `X-Cron-Token`. |
 | `POST` | `/api/cron/weekly` | Runs the same ingestion and notification routine as `--weekly`. Requires `X-Cron-Token`. |
 
