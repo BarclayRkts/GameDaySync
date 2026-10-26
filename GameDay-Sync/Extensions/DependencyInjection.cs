@@ -1,4 +1,4 @@
-﻿using GameDay_Sync.Repository;
+using GameDay_Sync.Repositories;
 using GameDay_Sync.Services;
 using GameDay_Sync.Services.Extraction;
 using GameDay_Sync.Services.Load;
@@ -12,7 +12,6 @@ public static class PipelineServiceCollectionExtensions
     {
         services.AddHttpClient<ExtractionService>();
         services.AddScoped<LoadService>();
-        services.AddScoped<GamesRepo>();
         services.AddScoped<Pipeline>();
         services.AddScoped<NotificationsEngine>();
         services.AddScoped<DiscordClient>();

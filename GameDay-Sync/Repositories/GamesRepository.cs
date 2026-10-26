@@ -8,6 +8,9 @@ public interface IGamesRepository
 {
     Task<(List<Game> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, string? search, string? league);
     Task<int> GetTotalCountAsync();
+    Task<List<Game>> GetDailyGames(bool includeAlreadyAlerted = false);
+    Task<List<Game>> GetWeeklyGames(bool includeAlreadyAlerted = false);
+    Task SaveTrackingChanges();
 }
 
 public class GamesRepository(AppDbContext dbContext) : IGamesRepository
@@ -43,4 +46,44 @@ public class GamesRepository(AppDbContext dbContext) : IGamesRepository
     }
 
     public Task<int> GetTotalCountAsync() => dbContext.Games.CountAsync();
+
+    public async Task<List<Game>> GetDailyGames(bool includeAlreadyAlerted = false)
+    {
+        var startUtc = GetCentralDayStartUtc();
+        var endUtc = GetCentralDayStartUtc(daysFromToday: 1);
+
+        // start of today through, the end of today
+        return await dbContext.Games
+            .Where(t => t.GameTime >= startUtc &&
+                        t.GameTime < endUtc &&
+                        (includeAlreadyAlerted || !t.DayAlertSent))
+            .OrderBy(g => g.GameTime)
+            .ToListAsync();
+    }
+
+    public async Task<List<Game>> GetWeeklyGames(bool includeAlreadyAlerted = false)
+    {
+        var startUtc = GetCentralDayStartUtc();
+        var weekEndUtc = GetCentralDayStartUtc(daysFromToday: 7);
+
+        // start of today through, but not including, the start of the eighth calendar day
+        return await dbContext.Games
+            .Where(t => t.GameTime >= startUtc &&
+                        t.GameTime < weekEndUtc &&
+                        (includeAlreadyAlerted || !t.WeekAlertSent))
+            .OrderBy(g => g.GameTime)
+            .ToListAsync();
+    }
+
+    public async Task SaveTrackingChanges()
+    {
+        await dbContext.SaveChangesAsync();
+    }
+
+    private static DateTime GetCentralDayStartUtc(int daysFromToday = 0)
+    {
+        var centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+        var todayCentral = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, centralTimeZone).Date;
+        return TimeZoneInfo.ConvertTimeToUtc(todayCentral.AddDays(daysFromToday), centralTimeZone);
+    }
 }

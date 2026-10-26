@@ -1,9 +1,9 @@
 ﻿using GameDay_Sync.Model;
-using GameDay_Sync.Repository;
+using GameDay_Sync.Repositories;
 
 namespace GameDay_Sync.Services.Notifications;
 
-public class NotificationsEngine(GamesRepo gamesRepo, DiscordClient discordClient, MessageFormatter formatter)
+public class NotificationsEngine(IGamesRepository gamesRepo, DiscordClient discordClient, MessageFormatter formatter)
 {
     public async Task SendWeeklyNotifications(bool includeAlreadyAlerted = false)
     {
